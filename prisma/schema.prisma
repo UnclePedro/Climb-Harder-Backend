@@ -18,16 +18,47 @@ datasource db {
 }
 
 model User {
-  id              Int       @id @default(autoincrement())
-  apiKey          String    @unique
-  Quote           Quote[]
+  id              Int             @id @default(autoincrement())
+  apiKey          String          @unique
+  seasons         Season[]
+  workouts        Workout[]
 }
 
-model Quote {
-  id              Int       @id @default(autoincrement())
-  quote           String
-  author          String    @default("Unknown")
-  authorId        Int       // Foreign key to the User model
-  user            User      @relation(fields: [authorId], references: [id]) // Relation to User
-  isUserQuote     Boolean   @default(true)
+model Season {
+  user            User            @relation(fields: [userId], references: [id]) // Relation to User
+  userId          Int             // Foreign key to the User model
+  seasonNumber    Int
+  workouts        Workout[]       // One-to-many relationship with Workout
+  seasonNotes     SeasonNotes?    // One-to-one relationship with SeasonNotes
+  id              Int             @id @default(autoincrement())
+}
+
+model SeasonNotes {
+  season            Season        @relation(fields: [seasonId], references: [id])
+  seasonId          Int           @id // Foreign key to Season ID
+  trainingFocuses   String?
+  goals             String?
+  achievements      String?
+}
+
+model Workout {
+  user            User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId          Int                // Foreign key to User model
+  season          Season             @relation(fields: [seasonId], references: [id], onDelete: Cascade)
+  seasonId        Int                // Foreign key to Season
+  id              Int                @id @default(autoincrement())
+  name            String        
+  trainingType    TrainingType  
+  details         String?       
+  duration        Int           
+  date            DateTime      
+}
+
+// Enum for the different types of training
+enum TrainingType {
+  Base
+  Strength
+  Power
+  PowerEndurance
+  Performance
 }
