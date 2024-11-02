@@ -25,33 +25,33 @@ model User {
 }
 
 model Season {
-  user            User            @relation(fields: [userId], references: [id]) // Relation to User
-  userId          Int             // Foreign key to the User model
+  id              Int             @id @default(autoincrement())
   seasonNumber    Int
   workouts        Workout[]       // One-to-many relationship with Workout
   seasonNotes     SeasonNotes?    // One-to-one relationship with SeasonNotes
-  id              Int             @id @default(autoincrement())
+  user            User            @relation(fields: [userId], references: [id]) // Relation to User
+  userId          Int             // Foreign key to the User model
 }
 
 model SeasonNotes {
-  season            Season        @relation(fields: [seasonId], references: [id])
-  seasonId          Int           @id // Foreign key to Season ID
   trainingFocuses   String?
   goals             String?
   achievements      String?
+  season            Season        @relation(fields: [seasonId], references: [id])
+  seasonId          Int           @id // Foreign key to Season ID
 }
 
 model Workout {
-  user            User               @relation(fields: [userId], references: [id], onDelete: Cascade)
-  userId          Int                // Foreign key to User model
-  season          Season             @relation(fields: [seasonId], references: [id], onDelete: Cascade)
-  seasonId        Int                // Foreign key to Season
   id              Int                @id @default(autoincrement())
   name            String        
   trainingType    TrainingType  
   details         String?       
   duration        Int           
-  date            DateTime      
+  date            DateTime    
+  user            User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId          Int                // Foreign key to User model
+  season          Season             @relation(fields: [seasonId], references: [id], onDelete: Cascade)
+  seasonId        Int                // Foreign key to Season  
 }
 
 // Enum for the different types of training
