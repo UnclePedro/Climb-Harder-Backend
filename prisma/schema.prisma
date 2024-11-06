@@ -45,7 +45,7 @@ model Workout {
   id              Int                @id @default(autoincrement())
   name            String        
   trainingType    TrainingType  
-  details         String?       
+  details         String    
   duration        Int           
   date            DateTime    
   user            User               @relation(fields: [userId], references: [id], onDelete: Cascade)
