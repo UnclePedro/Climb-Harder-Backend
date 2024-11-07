@@ -25,7 +25,7 @@ model User {
 }
 
 model Season {
-  id              Int             @id @default(autoincrement())
+  seasonId        Int             @id @default(autoincrement())
   seasonNumber    Int
   workouts        Workout[]       // One-to-many relationship with Workout
   seasonNotes     SeasonNotes?    // One-to-one relationship with SeasonNotes
@@ -37,12 +37,12 @@ model SeasonNotes {
   trainingFocuses   String?
   goals             String?
   achievements      String?
-  season            Season        @relation(fields: [seasonId], references: [id])
+  season            Season        @relation(fields: [seasonId], references: [seasonId])
   seasonId          Int           @id // Foreign key to Season ID
 }
 
 model Workout {
-  id              Int                @id @default(autoincrement())
+  workoutId       Int                @id @default(autoincrement())
   name            String        
   trainingType    TrainingType  
   details         String    
@@ -50,7 +50,7 @@ model Workout {
   date            DateTime    
   user            User               @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId          Int                // Foreign key to User model
-  season          Season             @relation(fields: [seasonId], references: [id], onDelete: Cascade)
+  season          Season             @relation(fields: [seasonId], references: [seasonId], onDelete: Cascade)
   seasonId        Int                // Foreign key to Season  
 }
 

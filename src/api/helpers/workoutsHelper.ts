@@ -1,10 +1,14 @@
 import express from "express";
 import { prisma } from "../..";
 import { TrainingType } from "@prisma/client";
+import { validateUser } from "./authenticationHelper";
 
-export const getWorkouts = async () => {
-  return await prisma.workout.findMany();
+export const getWorkouts = async (userId: number) => {
+  return await prisma.workout.findMany({
+    where: { userId: userId },
+  });
 };
+
 export const createWorkout = async (
   name: string,
   trainingType: TrainingType,
@@ -26,37 +30,27 @@ export const createWorkout = async (
     },
   });
 };
-
-export const deleteWorkout = async (quoteId: number, apiKey: string) => {
-  // Retrieve the quote to check the associated authorId
-  const quote = await prisma.quote.findUnique({
-    where: { id: quoteId },
-    select: { authorId: true }, // Select the authorId based on the quoteId
+export const deleteWorkout = async (workoutId: number, userId: number) => {
+  // Retrieve the workout to check the associated userId
+  const workout = await prisma.workout.findUnique({
+    where: { workoutId: workoutId },
+    select: { userId: true },
   });
 
-  // If the quote doesn't exist, throw an error
-  if (!quote) {
-    throw new Error("Quote not found");
+  // If the workout doesn't exist, throw an error
+  if (!workout) {
+    throw new Error("Workout not found");
   }
 
-  // Retrieve the user to check the apiKey
-  const user = await prisma.user.findUnique({
-    where: { id: quote.authorId },
-    select: { apiKey: true },
-  });
-
-  // If the user doesn't exist or the apiKey does not match, throw an error
-  if (!user) {
-    throw new Error("User not found");
-  }
-  if (user.apiKey !== apiKey) {
-    throw new Error("Unauthorized: API key does not match");
+  // Verify that the workout belongs to the authenticated user
+  if (workout.userId !== userId) {
+    throw new Error("Unauthorized: You do not own this workout");
   }
 
-  // Proceed with deletion if the apiKey matches
+  // Proceed with deletion if the userId matches
   await prisma.workout.delete({
     where: {
-      id: quoteId,
+      workoutId: workoutId,
     },
   });
 };
