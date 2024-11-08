@@ -17,9 +17,10 @@ seasonsRouter.post("/newSeason", async (req: Request, res: Response) => {
       return res.status(403).json({ error: "Unauthorized: User ID mismatch" });
     }
 
-    const addedSeason = await newSeason(user.id);
+    await newSeason(user.id);
+    const updatedSeasons: Season[] = await getSeasons(userId);
 
-    res.status(201).json({ addedSeason });
+    res.status(201).json({ updatedSeasons });
   } catch (error) {
     res.status(500).json({ error: "Failed to create new season" });
   }
@@ -42,7 +43,6 @@ seasonsRouter.delete("/deleteSeason", async (req: Request, res: Response) => {
     }
 
     await deleteSeason(seasonId);
-
     const updatedSeasons: Season[] = await getSeasons(user.id);
 
     res.status(200).json({

@@ -1,8 +1,9 @@
+import { SeasonNotes } from "@prisma/client";
 import { prisma } from "../config/prismaClient";
 
 export const getSeasons = async (userId: number) => {
   return await prisma.season.findMany({
-    where: { userId: userId },
+    where: { userId },
   });
 };
 
@@ -18,8 +19,6 @@ export const newSeason = async (userId: number) => {
       userId: userId,
     },
   });
-
-  return newSeason;
 };
 
 export const deleteSeason = async (seasonId: number) => {

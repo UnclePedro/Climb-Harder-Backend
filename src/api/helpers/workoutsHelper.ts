@@ -3,7 +3,7 @@ import { TrainingType, Workout } from "@prisma/client";
 
 export const getWorkouts = async (userId: number) => {
   return await prisma.workout.findMany({
-    where: { userId: userId },
+    where: { userId },
   });
 };
 
@@ -20,5 +20,15 @@ export const deleteWorkout = async (workoutId: number) => {
     where: {
       workoutId: workoutId,
     },
+  });
+};
+
+export const editWorkout = async (
+  workoutId: number,
+  updatedWorkout: Workout
+) => {
+  return await prisma.workout.update({
+    where: { workoutId },
+    data: { ...updatedWorkout },
   });
 };
