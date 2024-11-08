@@ -1,5 +1,5 @@
 import { Request, Response, Router } from "express";
-import { prisma } from "../helpers/prismaClient";
+import { prisma } from "../config/prismaClient";
 import { Workout } from "@prisma/client";
 import { validateUser } from "../helpers/authenticationHelper";
 import {
@@ -10,23 +10,19 @@ import {
 
 export const workoutsRouter = Router();
 
-workoutsRouter.post("/createWorkout", async (req, res) => {
+workoutsRouter.post("/createWorkout", async (req: Request, res: Response) => {
   const workout: Workout = req.body;
 
   try {
-    await validateUser(req.body.apiKey);
-
-    // Check user exists and if the userId from workout matches user.id
-    await prisma.user.findUnique({
-      where: { id: workout.userId },
-    });
+    const user = await validateUser(req.body.apiKey);
 
     // Check if the season exists and belongs to the user
     const season = await prisma.season.findUnique({
       where: { seasonId: workout.seasonId },
     });
 
-    if (!season || season.userId !== workout.userId) {
+    // If the found seasons userId doesn't match the validated user's ID, throw error
+    if (!season || season.userId !== user.id) {
       return res.status(404).json({ error: "Season not found" });
     }
 
@@ -41,8 +37,19 @@ workoutsRouter.delete("/deleteWorkout", async (req: Request, res: Response) => {
   const { workoutId, apiKey, userId } = req.body;
 
   try {
-    await validateUser(apiKey);
-    await deleteWorkout(workoutId, userId);
+    const user = await validateUser(apiKey);
+
+    // Retrieve the workout to verify ownership
+    const workout = await prisma.workout.findUnique({
+      where: { workoutId },
+    });
+
+    // Check if the workout exists and if the user owns it
+    if (!workout || workout.userId !== user.id) {
+      return res.status(404).json({ error: "Workout not found" });
+    }
+
+    await deleteWorkout(workoutId);
 
     const updatedWorkouts: Workout[] = await getWorkouts(userId);
 

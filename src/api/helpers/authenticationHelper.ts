@@ -1,5 +1,5 @@
 import crypto from "crypto";
-import { prisma } from "../helpers/prismaClient";
+import { prisma } from "../config/prismaClient";
 import { User } from "@prisma/client";
 
 export const newUser = async () => {
