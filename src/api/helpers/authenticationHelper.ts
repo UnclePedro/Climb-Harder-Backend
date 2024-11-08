@@ -1,6 +1,6 @@
 import crypto from "crypto";
-import { User } from "../models/User";
-import { prisma } from "../..";
+import { prisma } from "../helpers/prismaClient";
+import { User } from "@prisma/client";
 
 export const newUser = async () => {
   const apiKey = crypto.randomBytes(5).toString("hex");
@@ -20,7 +20,7 @@ export const validateUser = async (apiKey: string) => {
   });
 
   if (!user) {
-    throw new Error("Unauthorized: Invalid API key");
+    throw new Error("Unauthorized: Invalid key");
   }
 
   return user;
