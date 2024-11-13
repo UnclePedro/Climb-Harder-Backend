@@ -26,7 +26,8 @@ model User {
 
 model Season {
   seasonId        Int             @id @default(autoincrement())
-  seasonNumber    Int
+  name            String
+  number          Int
   workouts        Workout[]       // One-to-many relationship with Workout
   seasonNotes     SeasonNotes?    // One-to-one relationship with SeasonNotes
   user            User            @relation(fields: [userId], references: [id]) // Relation to User
