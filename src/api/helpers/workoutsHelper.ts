@@ -7,12 +7,22 @@ export const getWorkouts = async (userId: number) => {
   });
 };
 
-export const createWorkout = async (workout: Workout) => {
-  await prisma.workout.create({
-    data: {
-      ...workout,
-    },
-  });
+export const saveWorkout = async (userId: number, workout: Workout) => {
+  if (workout.workoutId) {
+    // Update existing workout
+    return await prisma.workout.update({
+      where: { workoutId: workout.workoutId },
+      data: { ...workout },
+    });
+  } else {
+    // Create new workout
+    return await prisma.workout.create({
+      data: {
+        ...workout,
+        userId,
+      },
+    });
+  }
 };
 
 export const deleteWorkout = async (workoutId: number) => {
@@ -20,15 +30,5 @@ export const deleteWorkout = async (workoutId: number) => {
     where: {
       workoutId: workoutId,
     },
-  });
-};
-
-export const editWorkout = async (
-  workoutId: number,
-  updatedWorkout: Workout
-) => {
-  return await prisma.workout.update({
-    where: { workoutId },
-    data: { ...updatedWorkout },
   });
 };
