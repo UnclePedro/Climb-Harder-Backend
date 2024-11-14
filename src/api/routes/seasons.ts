@@ -1,21 +1,29 @@
 import { Request, Response, Router } from "express";
 import { prisma } from "../config/prismaClient";
-import { Season } from "@prisma/client";
+import { Season, User } from "@prisma/client";
 import { validateUser } from "../helpers/authenticationHelper";
 import { deleteSeason, getSeasons, newSeason } from "../helpers/seasonsHelper";
 
 export const seasonsRouter = Router();
 
+seasonsRouter.get("/getSeasons", async (req: Request, res: Response) => {
+  try {
+    const { userId, apiKey } = req.body;
+
+    const user: User = await validateUser(userId, apiKey);
+    let seasons: Season[] = await getSeasons(user.id);
+
+    res.status(201).json({ seasons });
+  } catch (error) {
+    res.status(500).json({ error: "Failed to create new season" });
+  }
+});
+
 seasonsRouter.post("/newSeason", async (req: Request, res: Response) => {
   try {
-    const { apiKey, userId } = req.body;
+    const { userId, apiKey } = req.body;
 
-    const user = await validateUser(apiKey);
-
-    // Check if the provided userId in the body matches the authenticated user's id
-    if (user.id !== userId) {
-      return res.status(403).json({ error: "Unauthorized: User ID mismatch" });
-    }
+    const user = await validateUser(userId, apiKey);
 
     await newSeason(user.id);
     const updatedSeasons: Season[] = await getSeasons(userId);
@@ -27,10 +35,10 @@ seasonsRouter.post("/newSeason", async (req: Request, res: Response) => {
 });
 
 seasonsRouter.delete("/deleteSeason", async (req: Request, res: Response) => {
-  const { apiKey, seasonId } = req.body;
+  const { userId, apiKey, seasonId } = req.body;
 
   try {
-    const user = await validateUser(apiKey);
+    const user = await validateUser(userId, apiKey);
 
     // Retrieve the season to check ownership
     const season = await prisma.season.findUnique({

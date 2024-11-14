@@ -1,10 +1,13 @@
-import { SeasonNotes } from "@prisma/client";
 import { prisma } from "../config/prismaClient";
 
 export const getSeasons = async (userId: number) => {
-  return await prisma.season.findMany({
+  let seasons = await prisma.season.findMany({
     where: { userId },
   });
+  if (seasons.length === 0) {
+    seasons = [await newSeason(userId)];
+  }
+  return seasons;
 };
 
 export const newSeason = async (userId: number) => {

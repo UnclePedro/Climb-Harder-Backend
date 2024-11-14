@@ -8,10 +8,10 @@ export const seasonNotesRouter = Router();
 seasonNotesRouter.put(
   "/editSeasonNotes",
   async (req: Request, res: Response) => {
-    const { seasonId, updatedSeasonNotesData, apiKey } = req.body;
+    const { seasonId, updatedSeasonNotesData, userId, apiKey } = req.body;
 
     try {
-      const user = await validateUser(apiKey);
+      const user = await validateUser(userId, apiKey);
 
       // Retrieve the season to verify ownership
       const season = await prisma.season.findUnique({
@@ -20,7 +20,7 @@ seasonNotesRouter.put(
 
       // Check if the season exists and if the user owns it
       if (!season || season.userId !== user.id) {
-        return res.status(404).json({ error: "Season not found" });
+        return res.status(404).json({ error: "Season could not be edited" });
       }
 
       const updatedSeasonNotes = await editSeasonNotes(
@@ -28,12 +28,10 @@ seasonNotesRouter.put(
         updatedSeasonNotesData
       );
 
-      res
-        .status(200)
-        .json({
-          message: "Season notes updated successfully",
-          updatedSeasonNotes,
-        });
+      res.status(200).json({
+        message: "Season notes updated successfully",
+        updatedSeasonNotes,
+      });
     } catch (error) {
       res.status(500).json({ error: "Failed to update season notes" });
     }
