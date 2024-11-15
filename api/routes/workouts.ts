@@ -42,13 +42,14 @@ workoutsRouter.post("/saveWorkout", async (req: Request, res: Response) => {
     }
 
     // Save the workout (create or update based on workoutId presence)
-    const savedWorkout = await saveWorkout(userId, workout);
+    await saveWorkout(userId, workout);
+    const updatedWorkouts: Workout[] = await getWorkouts(userId);
 
     res.status(workout.workoutId ? 200 : 201).json({
       message: workout.workoutId
         ? "Workout updated successfully"
         : "Workout created successfully",
-      savedWorkout,
+      updatedWorkouts,
     });
   } catch (error) {
     res.status(500).json({ error: "Failed to save workout" });

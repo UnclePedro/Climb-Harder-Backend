@@ -1,9 +1,9 @@
 import express from "express";
 import cors from "cors"; // Import the CORS middleware, which allows server to handle cross-origin requests. Server updates changes without reboot
-import { workoutsRouter } from "./api/routes/workouts";
-import { authenticationRouter } from "./api/routes/authentication";
-import { seasonsRouter } from "./api/routes/seasons";
-import { seasonNotesRouter } from "./api/routes/seasonNotes";
+import { workoutsRouter } from "./routes/workouts";
+import { authenticationRouter } from "./routes/authentication";
+import { seasonsRouter } from "./routes/seasons";
+import { seasonNotesRouter } from "./routes/seasonNotes";
 
 const corsOptions = {
   origin: [
