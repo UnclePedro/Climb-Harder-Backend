@@ -5,7 +5,7 @@ import { Request, Response, Router } from "express";
 export const authenticationRouter = Router();
 
 authenticationRouter.post(
-  "/createUser",
+  "/generateUser",
   async (req: Request, res: Response) => {
     try {
       const newUserData: User = await newUser();
