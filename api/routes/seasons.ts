@@ -6,7 +6,7 @@ import { deleteSeason, getSeasons, newSeason } from "../helpers/seasonsHelper";
 
 export const seasonsRouter = Router();
 
-seasonsRouter.get("/getSeasons", async (req: Request, res: Response) => {
+seasonsRouter.post("/getSeasons", async (req: Request, res: Response) => {
   try {
     const { userId, apiKey } = req.body;
 
