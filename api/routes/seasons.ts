@@ -55,7 +55,7 @@ seasonsRouter.delete("/deleteSeason", async (req: Request, res: Response) => {
 
     // Retrieve the season to check ownership
     const season = await prisma.season.findUnique({
-      where: { seasonId },
+      where: { id: seasonId },
     });
 
     // Check if the authenticated user owns the season

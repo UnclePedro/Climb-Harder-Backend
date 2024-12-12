@@ -37,6 +37,6 @@ export const newSeason = async (userId: number) => {
 
 export const deleteSeason = async (seasonId: number) => {
   await prisma.season.delete({
-    where: { seasonId },
+    where: { id: seasonId },
   });
 };

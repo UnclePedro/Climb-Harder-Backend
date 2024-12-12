@@ -19,7 +19,7 @@ seasonNotesRouter.get(
       const user = await validateUser(apiKey as string);
       const seasonNotes: SeasonNotes[] = await getSeasonNotes(user.id);
 
-      res.status(201).json({ seasonNotes });
+      res.status(201).json(seasonNotes);
     } catch (error) {
       res.status(500).json({ error: "Failed to create new season" });
     }
@@ -41,7 +41,7 @@ seasonNotesRouter.put(
       const user = await validateUser(apiKey as string);
 
       const season = await prisma.season.findUnique({
-        where: { seasonId },
+        where: { id: seasonId },
       });
 
       // Check if the season exists and if the user owns it

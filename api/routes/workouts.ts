@@ -41,9 +41,9 @@ workoutsRouter.post("/saveWorkout", async (req: Request, res: Response) => {
     const user = await validateUser(apiKey as string);
 
     // If the workout already exists, verify ownership
-    if (workout.workoutId) {
+    if (workout.id) {
       const existingWorkout = await prisma.workout.findUnique({
-        where: { workoutId: workout.workoutId },
+        where: { id: workout.id },
       });
 
       if (!existingWorkout || existingWorkout.userId !== user.id) {
@@ -53,12 +53,12 @@ workoutsRouter.post("/saveWorkout", async (req: Request, res: Response) => {
       }
     }
 
-    // Save the workout (create or update based on workoutId presence)
+    // Save the workout (create or update based on id presence)
     await saveWorkout(user.id, workout);
     const updatedWorkouts: Workout[] = await getWorkouts(user.id);
 
-    res.status(workout.workoutId ? 200 : 201).json({
-      message: workout.workoutId
+    res.status(workout.id ? 200 : 201).json({
+      message: workout.id
         ? "Workout updated successfully"
         : "Workout created successfully",
       updatedWorkouts,
@@ -82,7 +82,7 @@ workoutsRouter.delete("/deleteWorkout", async (req: Request, res: Response) => {
 
     // Retrieve the workout to verify ownership
     const workout = await prisma.workout.findUnique({
-      where: { workoutId },
+      where: { id: workoutId },
     });
 
     // Check if the workout exists and if the user owns it

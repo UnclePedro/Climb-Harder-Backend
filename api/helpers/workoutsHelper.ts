@@ -8,9 +8,9 @@ export const getWorkouts = async (userId: number) => {
 };
 
 export const saveWorkout = async (userId: number, workout: Workout) => {
-  if (workout.workoutId) {
+  if (workout.id) {
     return await prisma.workout.update({
-      where: { workoutId: workout.workoutId },
+      where: { id: workout.id },
       data: { ...workout },
     });
   } else {
@@ -26,7 +26,7 @@ export const saveWorkout = async (userId: number, workout: Workout) => {
 export const deleteWorkout = async (workoutId: number) => {
   await prisma.workout.delete({
     where: {
-      workoutId: workoutId,
+      id: workoutId,
     },
   });
 };
