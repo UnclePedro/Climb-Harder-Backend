@@ -27,7 +27,7 @@ seasonNotesRouter.get(
 );
 
 seasonNotesRouter.put(
-  "/editSeasonNotes",
+  "/saveSeasonNotes",
   async (req: Request, res: Response) => {
     const { seasonId, updatedSeasonNotesData } = req.body;
 
