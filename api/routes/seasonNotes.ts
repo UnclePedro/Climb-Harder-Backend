@@ -6,14 +6,18 @@ import { Season, SeasonNotes, User } from "@prisma/client";
 
 export const seasonNotesRouter = Router();
 
-seasonNotesRouter.post(
+seasonNotesRouter.get(
   "/getSeasonNotes",
   async (req: Request, res: Response) => {
     try {
-      const { userId, apiKey } = req.body;
+      const apiKey = req.headers["apikey"];
 
-      await validateUser(userId, apiKey);
-      const seasonNotes: SeasonNotes[] = await getSeasonNotes(userId);
+      if (!apiKey) {
+        return res.status(400).json({ error: "Missing apiKey" });
+      }
+
+      const user = await validateUser(apiKey as string);
+      const seasonNotes: SeasonNotes[] = await getSeasonNotes(user.id);
 
       res.status(201).json({ seasonNotes });
     } catch (error) {
@@ -25,18 +29,23 @@ seasonNotesRouter.post(
 seasonNotesRouter.put(
   "/editSeasonNotes",
   async (req: Request, res: Response) => {
-    const { seasonId, updatedSeasonNotesData, userId, apiKey } = req.body;
+    const { seasonId, updatedSeasonNotesData } = req.body;
 
     try {
-      await validateUser(userId, apiKey);
+      const apiKey = req.headers["apikey"];
 
-      // Retrieve the season to verify ownership
+      if (!apiKey) {
+        return res.status(400).json({ error: "Missing apiKey" });
+      }
+
+      const user = await validateUser(apiKey as string);
+
       const season = await prisma.season.findUnique({
         where: { seasonId },
       });
 
       // Check if the season exists and if the user owns it
-      if (!season || season.userId !== userId) {
+      if (!season || season.userId !== user.id) {
         return res
           .status(404)
           .json({ error: "Season notes could not be edited" });

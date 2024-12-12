@@ -6,27 +6,34 @@ import { deleteSeason, getSeasons, newSeason } from "../helpers/seasonsHelper";
 
 export const seasonsRouter = Router();
 
-seasonsRouter.post("/getSeasons", async (req: Request, res: Response) => {
+seasonsRouter.get("/getSeasons", async (req: Request, res: Response) => {
   try {
-    const { userId, apiKey } = req.body;
+    const apiKey = req.headers["apikey"];
 
-    await validateUser(userId, apiKey);
-    const seasons: Season[] = await getSeasons(userId);
+    if (!apiKey) {
+      return res.status(400).json({ error: "Missing apiKey" });
+    }
 
-    res.status(201).json({ seasons });
+    const user = await validateUser(apiKey as string);
+    const seasons: Season[] = await getSeasons(user.id);
+
+    res.status(200).json({ seasons });
   } catch (error) {
-    res.status(500).json({ error: "Failed to create new season" });
+    console.error(error);
+    res.status(500).json({ error: "Failed to fetch seasons" });
   }
 });
 
 seasonsRouter.post("/newSeason", async (req: Request, res: Response) => {
   try {
-    const { userId, apiKey } = req.body;
+    const apiKey = req.headers["apikey"];
 
-    await validateUser(userId, apiKey);
+    if (!apiKey) {
+      return res.status(400).json({ error: "Missing apiKey" });
+    }
 
-    await newSeason(userId);
-    const updatedSeasons: Season[] = await getSeasons(userId);
+    const user = await validateUser(apiKey as string);
+    const updatedSeasons: Season[] = await getSeasons(user.id);
 
     res.status(201).json({ updatedSeasons });
   } catch (error) {
@@ -35,10 +42,16 @@ seasonsRouter.post("/newSeason", async (req: Request, res: Response) => {
 });
 
 seasonsRouter.delete("/deleteSeason", async (req: Request, res: Response) => {
-  const { userId, apiKey, seasonId } = req.body;
+  const { seasonId } = req.body;
 
   try {
-    await validateUser(userId, apiKey);
+    const apiKey = req.headers["apikey"];
+
+    if (!apiKey) {
+      return res.status(400).json({ error: "Missing apiKey" });
+    }
+
+    const user = await validateUser(apiKey as string);
 
     // Retrieve the season to check ownership
     const season = await prisma.season.findUnique({
@@ -46,12 +59,12 @@ seasonsRouter.delete("/deleteSeason", async (req: Request, res: Response) => {
     });
 
     // Check if the authenticated user owns the season
-    if (!season || season.userId !== userId) {
+    if (!season || season.userId !== user.id) {
       return res.status(403).json({ error: "Season not found" });
     }
 
     await deleteSeason(seasonId);
-    const updatedSeasons: Season[] = await getSeasons(userId);
+    const updatedSeasons: Season[] = await getSeasons(user.id);
 
     res.status(200).json({
       message: "Season deleted successfully",

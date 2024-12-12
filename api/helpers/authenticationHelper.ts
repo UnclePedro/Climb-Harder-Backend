@@ -14,17 +14,13 @@ export const newUser = async () => {
   return newUser;
 };
 
-export const validateUser = async (userId: number, apiKey: string) => {
+export const validateUser = async (apiKey: string) => {
   const user = await prisma.user.findUnique({
     where: { apiKey },
   });
 
   if (!user) {
     throw { status: 401, message: "Unauthorized: Invalid API key" };
-  }
-
-  if (user.id !== userId) {
-    throw { status: 403, message: "Unauthorized: Invalid user ID" };
   }
 
   return user;

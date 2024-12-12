@@ -11,7 +11,6 @@ authenticationRouter.post(
       const newUserData: User = await newUser();
       res.status(201).json({
         message: "User created successfully",
-        id: newUserData.id,
         apiKey: newUserData.apiKey,
       });
     } catch (error) {

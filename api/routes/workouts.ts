@@ -11,10 +11,15 @@ import {
 export const workoutsRouter = Router();
 
 workoutsRouter.get("/getWorkouts", async (req: Request, res: Response) => {
-  const { userId, apiKey } = req.body;
   try {
-    await validateUser(userId, apiKey);
-    await getWorkouts(userId);
+    const apiKey = req.headers["apikey"];
+
+    if (!apiKey) {
+      return res.status(400).json({ error: "Missing apiKey" });
+    }
+
+    const user = await validateUser(apiKey as string);
+    await getWorkouts(user.id);
   } catch (error) {
     res.status(500).json({
       error: "Failed to get workouts",
@@ -23,10 +28,16 @@ workoutsRouter.get("/getWorkouts", async (req: Request, res: Response) => {
 });
 
 workoutsRouter.post("/saveWorkout", async (req: Request, res: Response) => {
-  const { workout, userId, apiKey } = req.body;
+  const { workout } = req.body;
 
   try {
-    await validateUser(userId, apiKey);
+    const apiKey = req.headers["apikey"];
+
+    if (!apiKey) {
+      return res.status(400).json({ error: "Missing apiKey" });
+    }
+
+    const user = await validateUser(apiKey as string);
 
     // If the workout already exists, verify ownership
     if (workout.workoutId) {
@@ -34,7 +45,7 @@ workoutsRouter.post("/saveWorkout", async (req: Request, res: Response) => {
         where: { workoutId: workout.workoutId },
       });
 
-      if (!existingWorkout || existingWorkout.userId !== userId) {
+      if (!existingWorkout || existingWorkout.userId !== user.id) {
         return res.status(403).json({
           error: "Unauthorized: You can only update your own workouts",
         });
@@ -42,8 +53,8 @@ workoutsRouter.post("/saveWorkout", async (req: Request, res: Response) => {
     }
 
     // Save the workout (create or update based on workoutId presence)
-    await saveWorkout(userId, workout);
-    const updatedWorkouts: Workout[] = await getWorkouts(userId);
+    await saveWorkout(user.id, workout);
+    const updatedWorkouts: Workout[] = await getWorkouts(user.id);
 
     res.status(workout.workoutId ? 200 : 201).json({
       message: workout.workoutId
@@ -57,10 +68,16 @@ workoutsRouter.post("/saveWorkout", async (req: Request, res: Response) => {
 });
 
 workoutsRouter.delete("/deleteWorkout", async (req: Request, res: Response) => {
-  const { workoutId, userId, apiKey } = req.body;
+  const { workoutId } = req.body;
 
   try {
-    const user = await validateUser(userId, apiKey);
+    const apiKey = req.headers["apikey"];
+
+    if (!apiKey) {
+      return res.status(400).json({ error: "Missing apiKey" });
+    }
+
+    const user = await validateUser(apiKey as string);
 
     // Retrieve the workout to verify ownership
     const workout = await prisma.workout.findUnique({
@@ -74,7 +91,7 @@ workoutsRouter.delete("/deleteWorkout", async (req: Request, res: Response) => {
 
     await deleteWorkout(workoutId);
 
-    const updatedWorkouts: Workout[] = await getWorkouts(userId);
+    const updatedWorkouts: Workout[] = await getWorkouts(user.id);
 
     res.status(200).json({
       message: "Workout deleted successfully",
