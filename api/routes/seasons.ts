@@ -17,7 +17,7 @@ seasonsRouter.get("/getSeasons", async (req: Request, res: Response) => {
     const user = await validateUser(apiKey as string);
     const seasons: Season[] = await getSeasons(user.id);
 
-    res.status(200).json({ seasons });
+    res.status(200).json(seasons);
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Failed to fetch seasons" });
