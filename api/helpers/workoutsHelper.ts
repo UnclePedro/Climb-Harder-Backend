@@ -9,13 +9,11 @@ export const getWorkouts = async (userId: number) => {
 
 export const saveWorkout = async (userId: number, workout: Workout) => {
   if (workout.workoutId) {
-    // Update existing workout
     return await prisma.workout.update({
       where: { workoutId: workout.workoutId },
       data: { ...workout },
     });
   } else {
-    // Create new workout
     return await prisma.workout.create({
       data: {
         ...workout,

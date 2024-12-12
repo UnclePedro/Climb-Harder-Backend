@@ -19,7 +19,8 @@ workoutsRouter.get("/getWorkouts", async (req: Request, res: Response) => {
     }
 
     const user = await validateUser(apiKey as string);
-    await getWorkouts(user.id);
+    const workouts = await getWorkouts(user.id);
+    res.status(200).json({ workouts });
   } catch (error) {
     res.status(500).json({
       error: "Failed to get workouts",
