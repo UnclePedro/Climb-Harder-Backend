@@ -1,9 +1,26 @@
 import { Request, Response, Router } from "express";
 import { prisma } from "../config/prismaClient";
 import { validateUser } from "../helpers/authenticationHelper";
-import { editSeasonNotes } from "../helpers/seasonNotesHelper";
+import { editSeasonNotes, getSeasonNotes } from "../helpers/seasonNotesHelper";
+import { Season, SeasonNotes, User } from "@prisma/client";
 
 export const seasonNotesRouter = Router();
+
+seasonNotesRouter.post(
+  "/getSeasonNotes",
+  async (req: Request, res: Response) => {
+    try {
+      const { userId, apiKey } = req.body;
+
+      await validateUser(userId, apiKey);
+      const seasonNotes: SeasonNotes[] = await getSeasonNotes(userId);
+
+      res.status(201).json({ seasonNotes });
+    } catch (error) {
+      res.status(500).json({ error: "Failed to create new season" });
+    }
+  }
+);
 
 seasonNotesRouter.put(
   "/editSeasonNotes",
@@ -11,7 +28,7 @@ seasonNotesRouter.put(
     const { seasonId, updatedSeasonNotesData, userId, apiKey } = req.body;
 
     try {
-      const user = await validateUser(userId, apiKey);
+      await validateUser(userId, apiKey);
 
       // Retrieve the season to verify ownership
       const season = await prisma.season.findUnique({
@@ -19,8 +36,10 @@ seasonNotesRouter.put(
       });
 
       // Check if the season exists and if the user owns it
-      if (!season || season.userId !== user.id) {
-        return res.status(404).json({ error: "Season could not be edited" });
+      if (!season || season.userId !== userId) {
+        return res
+          .status(404)
+          .json({ error: "Season notes could not be edited" });
       }
 
       const updatedSeasonNotes = await editSeasonNotes(

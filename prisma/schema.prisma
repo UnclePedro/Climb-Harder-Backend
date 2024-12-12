@@ -21,6 +21,7 @@ model User {
   id              Int             @id @default(autoincrement())
   apiKey          String          @unique
   seasons         Season[]
+  SeasonNotes     SeasonNotes[]
   workouts        Workout[]
 }
 
@@ -38,6 +39,8 @@ model SeasonNotes {
   trainingFocuses   String?
   goals             String?
   achievements      String?
+  user              User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId            Int           // Foreign key to User model
   season            Season        @relation(fields: [seasonId], references: [seasonId])
   seasonId          Int           @id // Foreign key to Season ID
 }

@@ -10,8 +10,8 @@ seasonsRouter.post("/getSeasons", async (req: Request, res: Response) => {
   try {
     const { userId, apiKey } = req.body;
 
-    const user: User = await validateUser(userId, apiKey);
-    let seasons: Season[] = await getSeasons(user.id);
+    await validateUser(userId, apiKey);
+    const seasons: Season[] = await getSeasons(userId);
 
     res.status(201).json({ seasons });
   } catch (error) {
@@ -23,9 +23,9 @@ seasonsRouter.post("/newSeason", async (req: Request, res: Response) => {
   try {
     const { userId, apiKey } = req.body;
 
-    const user = await validateUser(userId, apiKey);
+    await validateUser(userId, apiKey);
 
-    await newSeason(user.id);
+    await newSeason(userId);
     const updatedSeasons: Season[] = await getSeasons(userId);
 
     res.status(201).json({ updatedSeasons });
@@ -38,7 +38,7 @@ seasonsRouter.delete("/deleteSeason", async (req: Request, res: Response) => {
   const { userId, apiKey, seasonId } = req.body;
 
   try {
-    const user = await validateUser(userId, apiKey);
+    await validateUser(userId, apiKey);
 
     // Retrieve the season to check ownership
     const season = await prisma.season.findUnique({
@@ -46,12 +46,12 @@ seasonsRouter.delete("/deleteSeason", async (req: Request, res: Response) => {
     });
 
     // Check if the authenticated user owns the season
-    if (!season || season.userId !== user.id) {
+    if (!season || season.userId !== userId) {
       return res.status(403).json({ error: "Season not found" });
     }
 
     await deleteSeason(seasonId);
-    const updatedSeasons: Season[] = await getSeasons(user.id);
+    const updatedSeasons: Season[] = await getSeasons(userId);
 
     res.status(200).json({
       message: "Season deleted successfully",
