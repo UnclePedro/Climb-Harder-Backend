@@ -30,9 +30,11 @@ seasonsRouter.post("/newSeason", async (req: Request, res: Response) => {
     const apiKey = req.headers["apikey"];
     const user = await validateUser(apiKey as string);
 
+    await newSeason(user.id);
+
     const updatedSeasons: Season[] = await getSeasons(user.id);
 
-    res.status(201).json({ updatedSeasons });
+    res.status(201).json(updatedSeasons);
   } catch (error) {
     res.status(500).json({ error: "Failed to create new season" });
   }
