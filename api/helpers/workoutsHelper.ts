@@ -33,6 +33,31 @@ export const getWorkouts = async (userId: number) => {
   });
 };
 
+export const newWorkout = async (userId: number, seasonId: number) => {
+  const lastWorkout = await prisma.workout.findFirst({
+    where: {
+      seasonId,
+      season: {
+        userId,
+      },
+    },
+    orderBy: { date: "desc" },
+  });
+
+  const newWorkout = await prisma.workout.create({
+    data: {
+      name: lastWorkout?.name || "Workout Name",
+      trainingType: lastWorkout?.trainingType || TrainingType.Base,
+      details: "",
+      duration: 0,
+      date: new Date(),
+      seasonId,
+    },
+  });
+
+  return newWorkout;
+};
+
 export const saveWorkout = async (workout: Workout) => {
   return await prisma.workout.upsert({
     where: { id: workout.id },
