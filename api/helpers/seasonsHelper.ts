@@ -1,5 +1,18 @@
 import { prisma } from "../config/prismaClient";
 
+export const validateSeasonOwnership = async (
+  seasonId: number,
+  userId: number
+) => {
+  const season = await prisma.season.findUnique({
+    where: { id: seasonId },
+  });
+
+  if (!season || season.userId !== userId) {
+    throw new Error("Season not found or user is not authorized");
+  }
+};
+
 export const getSeasons = async (userId: number) => {
   let seasons = await prisma.season.findMany({
     where: { userId },

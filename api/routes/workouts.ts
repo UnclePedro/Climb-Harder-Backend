@@ -6,6 +6,7 @@ import {
   deleteWorkout,
   saveWorkout,
   getWorkouts,
+  validateWorkoutOwnership,
 } from "../helpers/workoutsHelper";
 
 export const workoutsRouter = Router();
@@ -13,13 +14,10 @@ export const workoutsRouter = Router();
 workoutsRouter.get("/getWorkouts", async (req: Request, res: Response) => {
   try {
     const apiKey = req.headers["apikey"];
-
-    if (!apiKey) {
-      return res.status(400).json({ error: "Missing apiKey" });
-    }
-
     const user = await validateUser(apiKey as string);
+
     const workouts = await getWorkouts(user.id);
+
     res.status(200).json(workouts);
   } catch (error) {
     res.status(500).json({
@@ -33,28 +31,12 @@ workoutsRouter.post("/saveWorkout", async (req: Request, res: Response) => {
 
   try {
     const apiKey = req.headers["apikey"];
-
-    if (!apiKey) {
-      return res.status(400).json({ error: "Missing apiKey" });
-    }
-
     const user = await validateUser(apiKey as string);
-
-    // If the workout already exists, verify ownership
     if (workout.id) {
-      const existingWorkout = await prisma.workout.findUnique({
-        where: { id: workout.id },
-      });
-
-      if (!existingWorkout || existingWorkout.userId !== user.id) {
-        return res.status(403).json({
-          error: "Unauthorized: You can only update your own workouts",
-        });
-      }
+      await validateWorkoutOwnership(workout.id, user.id);
     }
 
-    // Save the workout (create or update based on id presence)
-    await saveWorkout(user.id, workout);
+    await saveWorkout(workout);
     const updatedWorkouts: Workout[] = await getWorkouts(user.id);
 
     res.status(workout.id ? 200 : 201).json({
@@ -73,22 +55,8 @@ workoutsRouter.delete("/deleteWorkout", async (req: Request, res: Response) => {
 
   try {
     const apiKey = req.headers["apikey"];
-
-    if (!apiKey) {
-      return res.status(400).json({ error: "Missing apiKey" });
-    }
-
     const user = await validateUser(apiKey as string);
-
-    // Retrieve the workout to verify ownership
-    const workout = await prisma.workout.findUnique({
-      where: { id: workoutId },
-    });
-
-    // Check if the workout exists and if the user owns it
-    if (!workout || workout.userId !== user.id) {
-      return res.status(404).json({ error: "Workout not found" });
-    }
+    validateWorkoutOwnership(workoutId, user.id);
 
     await deleteWorkout(workoutId);
 
