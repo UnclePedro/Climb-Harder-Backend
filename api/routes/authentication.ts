@@ -4,7 +4,7 @@ import { Request, Response, Router } from "express";
 
 export const authenticationRouter = Router();
 
-authenticationRouter.post(
+authenticationRouter.get(
   "/generateUser",
   async (req: Request, res: Response) => {
     try {

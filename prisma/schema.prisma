@@ -47,7 +47,7 @@ model Workout {
   trainingType    TrainingType  
   details         String    
   duration        Int           
-  date            DateTime    
+  date            DateTime
   season          Season             @relation(fields: [seasonId], references: [id], onDelete: Cascade)
   seasonId        Int                // Foreign key to Season  
 }
