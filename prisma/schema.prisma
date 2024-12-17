@@ -38,7 +38,7 @@ model SeasonNotes {
   trainingFocuses   String?
   goals             String?
   achievements      String?
-  season            Season        @relation(fields: [seasonId], references: [id])
+  season            Season        @relation(fields: [seasonId], references: [id], onDelete: Cascade)
 }
 
 model Workout {
