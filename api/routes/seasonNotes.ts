@@ -26,15 +26,14 @@ seasonNotesRouter.get(
 seasonNotesRouter.put(
   "/saveSeasonNotes",
   async (req: Request, res: Response) => {
-    const { seasonNotesData } = req.body;
+    const { seasonNotes } = req.body;
 
     try {
       const apiKey = req.headers["apikey"];
       const user = await validateUser(apiKey as string);
-      validateSeasonOwnership(seasonNotesData.seasonId, user.id);
-      console.log(seasonNotesData);
+      validateSeasonOwnership(seasonNotes.seasonId, user.id);
 
-      const updatedSeasonNotes = await saveSeasonNotes(seasonNotesData);
+      const updatedSeasonNotes = await saveSeasonNotes(seasonNotes);
 
       res.status(200).json({
         message: "Season notes updated successfully",
