@@ -68,10 +68,9 @@ export const saveWorkout = async (workout: Workout) => {
     });
   } else {
     // For existing workouts, use upsert
-    return await prisma.workout.upsert({
+    return await prisma.workout.update({
       where: { id: workout.id },
-      update: { ...workout },
-      create: { ...workout },
+      data: { ...workout },
     });
   }
 };
