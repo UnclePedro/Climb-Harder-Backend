@@ -59,11 +59,21 @@ export const newWorkout = async (userId: number, seasonId: number) => {
 };
 
 export const saveWorkout = async (workout: Workout) => {
-  return await prisma.workout.upsert({
-    where: { id: workout.id },
-    update: { ...workout }, // Update the workout if it exists
-    create: { ...workout }, // Create a new workout if it doesn't exist
-  });
+  console.log(workout);
+
+  // If the workout ID is -1, it means it's a new workout, so omit the ID during creation
+  if (workout.id === -1) {
+    return await prisma.workout.create({
+      data: { ...workout, id: undefined }, // Ensure id is not included
+    });
+  } else {
+    // For existing workouts, use upsert
+    return await prisma.workout.upsert({
+      where: { id: workout.id },
+      update: { ...workout },
+      create: { ...workout },
+    });
+  }
 };
 
 export const deleteWorkout = async (workoutId: number) => {

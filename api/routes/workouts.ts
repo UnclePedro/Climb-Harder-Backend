@@ -53,7 +53,9 @@ workoutsRouter.post("/saveWorkout", async (req: Request, res: Response) => {
   try {
     const apiKey = req.headers["apikey"];
     const user = await validateUser(apiKey as string);
-    if (workout.id) {
+
+    // Only validate ownership if it's a new workout
+    if (workout.id !== -1) {
       await validateWorkoutOwnership(workout.id, user.id);
     }
 
