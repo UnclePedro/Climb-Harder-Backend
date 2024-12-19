@@ -1,5 +1,4 @@
 import { Request, Response, Router } from "express";
-import { prisma } from "../config/prismaClient";
 import { Workout } from "@prisma/client";
 import { validateUser } from "../helpers/authenticationHelper";
 import {
@@ -34,10 +33,7 @@ workoutsRouter.post("/newWorkout", async (req: Request, res: Response) => {
     const apiKey = req.headers["apikey"];
     const user = await validateUser(apiKey as string);
 
-    // Create a new workout
     const workout = await newWorkout(user.id, seasonId);
-
-    // Fetch updated workouts for the user
     const updatedWorkouts = await getWorkouts(user.id);
 
     res.status(201).json({ workout, updatedWorkouts });
@@ -54,7 +50,7 @@ workoutsRouter.post("/saveWorkout", async (req: Request, res: Response) => {
     const apiKey = req.headers["apikey"];
     const user = await validateUser(apiKey as string);
 
-    // Only validate ownership if it's a new workout
+    // Only validate ownership if it's an existing workout
     if (workout.id !== -1) {
       await validateWorkoutOwnership(workout.id, user.id);
     }
@@ -79,7 +75,7 @@ workoutsRouter.delete("/deleteWorkout", async (req: Request, res: Response) => {
   try {
     const apiKey = req.headers["apikey"];
     const user = await validateUser(apiKey as string);
-    validateWorkoutOwnership(workoutId, user.id);
+    await validateWorkoutOwnership(workoutId, user.id);
 
     await deleteWorkout(workoutId);
 

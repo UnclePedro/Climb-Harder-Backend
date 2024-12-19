@@ -1,8 +1,7 @@
 import { Request, Response, Router } from "express";
-import { prisma } from "../config/prismaClient";
 import { validateUser } from "../helpers/authenticationHelper";
 import { saveSeasonNotes, getSeasonNotes } from "../helpers/seasonNotesHelper";
-import { Season, SeasonNotes, User } from "@prisma/client";
+import { SeasonNotes, User } from "@prisma/client";
 import { validateSeasonOwnership } from "../helpers/seasonsHelper";
 
 export const seasonNotesRouter = Router();
@@ -31,7 +30,7 @@ seasonNotesRouter.put(
     try {
       const apiKey = req.headers["apikey"];
       const user = await validateUser(apiKey as string);
-      validateSeasonOwnership(seasonNotes.seasonId, user.id);
+      await validateSeasonOwnership(seasonNotes.seasonId, user.id);
 
       const updatedSeasonNotes = await saveSeasonNotes(seasonNotes);
 

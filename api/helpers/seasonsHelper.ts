@@ -8,8 +8,11 @@ export const validateSeasonOwnership = async (
     where: { id: seasonId },
   });
 
-  if (!season || season.userId !== userId) {
-    throw new Error("Season not found or user is not authorized");
+  if (!season) {
+    throw new Error("Could not find season to delete");
+  }
+  if (season.userId !== userId) {
+    throw new Error("User is not authorized");
   }
 };
 

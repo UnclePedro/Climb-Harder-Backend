@@ -1,5 +1,4 @@
 import { Request, Response, Router } from "express";
-import { prisma } from "../config/prismaClient";
 import { Season, User } from "@prisma/client";
 import { validateUser } from "../helpers/authenticationHelper";
 import {
@@ -31,7 +30,6 @@ seasonsRouter.post("/newSeason", async (req: Request, res: Response) => {
     const user = await validateUser(apiKey as string);
 
     await newSeason(user.id);
-
     const updatedSeasons: Season[] = await getSeasons(user.id);
 
     res.status(201).json(updatedSeasons);
@@ -46,7 +44,7 @@ seasonsRouter.delete("/deleteSeason", async (req: Request, res: Response) => {
   try {
     const apiKey = req.headers["apikey"];
     const user = await validateUser(apiKey as string);
-    validateSeasonOwnership(seasonId, user.id);
+    await validateSeasonOwnership(seasonId, user.id);
 
     await deleteSeason(seasonId);
     const updatedSeasons: Season[] = await getSeasons(user.id);

@@ -59,9 +59,7 @@ export const newWorkout = async (userId: number, seasonId: number) => {
 };
 
 export const saveWorkout = async (workout: Workout) => {
-  console.log(workout);
-
-  // If the workout ID is -1, it means it's a new workout, so omit the ID during creation
+  // If the workout ID is -1, it's a new workout, so omit the placeholder ID during creation
   if (workout.id === -1) {
     return await prisma.workout.create({
       data: { ...workout, id: undefined }, // Ensure id is not included
