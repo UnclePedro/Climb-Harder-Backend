@@ -19,6 +19,7 @@ export const validateSeasonOwnership = async (
 export const getSeasons = async (userId: number) => {
   let seasons = await prisma.season.findMany({
     where: { userId },
+    orderBy: { number: "asc" },
   });
   if (seasons.length === 0) {
     seasons = [await newSeason(userId)];
