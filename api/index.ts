@@ -25,5 +25,5 @@ app.use("/", workoutsRouter);
 
 app.listen(8080, () => {
   console.log("Server is running.");
-  console.log("Database URL:", process.env.POSTGRES_PRISMA_URL);
+  console.log("Database URL:", process.env.DATABASE_URL);
 });
