@@ -1,6 +1,6 @@
-# Mindful Memos Backend
+# Climb Harder Backend
 
-A custom backend solution for my Mindful Memos app. Custom API's that query a PostgreSQL database with the help of Prisma.
+A custom backend solution for my Climb Harder app. Custom API's that query a PostgreSQL database with the help of Prisma.
 
 ## Developed Using
 - [TypeScript](https://www.typescriptlang.org/)
