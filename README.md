@@ -1,6 +1,6 @@
 # Climb Harder Backend
 
-A custom backend solution for my Climb Harder app. Custom API's that query a PostgreSQL database with the help of Prisma.
+A backend solution for my Climb Harder app. Custom APIs that save your workout data and user details to a PostgreSQL database.
 
 ## Developed Using
 - [TypeScript](https://www.typescriptlang.org/)
