@@ -17,9 +17,10 @@ datasource db {
 }
 
 model User {
-  id              Int             @id @default(autoincrement())
-  apiKey          String          @unique
-  seasons         Season[]
+  name               String  
+  id                 String    @unique
+  profilePictureUrl  String?
+  seasons            Season[]
 }
 
 model Season {
@@ -29,11 +30,11 @@ model Season {
   workouts        Workout[]       // One-to-many relationship with Workout
   seasonNotes     SeasonNotes?    // One-to-one relationship with SeasonNotes
   user            User            @relation(fields: [userId], references: [id]) // Relation to User
-  userId          Int             // Foreign key to the User model
+  userId          String          // Foreign key to the User model
 }
 
 model SeasonNotes {
-  seasonId          Int           @id // Foreign key to Season ID
+  seasonId          Int           @id // Foreign key to Season
   trainingFocuses   String?
   goals             String?
   achievements      String?

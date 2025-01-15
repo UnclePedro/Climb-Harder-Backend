@@ -1,7 +1,7 @@
 import express from "express";
 import cors from "cors"; // Import the CORS middleware, which allows server to handle cross-origin requests. Server updates changes without reboot
 import { workoutsRouter } from "./routes/workouts";
-import { authenticationRouter } from "./routes/authentication";
+import { authRouter } from "./routes/authentication";
 import { seasonsRouter } from "./routes/seasons";
 import { seasonNotesRouter } from "./routes/seasonNotes";
 
@@ -18,7 +18,7 @@ const app = express();
 app.use(express.json()); // Middleware to parse JSON bodies
 app.use(cors(corsOptions)); // Apply CORS middleware with the specified options to the Express app
 
-app.use("/", authenticationRouter);
+app.use("/", authRouter);
 app.use("/", seasonsRouter);
 app.use("/", seasonNotesRouter);
 app.use("/", workoutsRouter);

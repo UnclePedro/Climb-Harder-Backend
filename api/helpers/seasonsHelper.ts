@@ -2,21 +2,21 @@ import { prisma } from "../config/prismaClient";
 
 export const validateSeasonOwnership = async (
   seasonId: number,
-  userId: number
+  userId: string
 ) => {
   const season = await prisma.season.findUnique({
     where: { id: seasonId },
   });
 
   if (!season) {
-    throw new Error("Could not find season to delete");
+    throw new Error("Could not find season");
   }
   if (season.userId !== userId) {
     throw new Error("User is not authorized");
   }
 };
 
-export const getSeasons = async (userId: number) => {
+export const getSeasons = async (userId: string) => {
   let seasons = await prisma.season.findMany({
     where: { userId },
     orderBy: { number: "asc" },
@@ -27,7 +27,7 @@ export const getSeasons = async (userId: number) => {
   return seasons;
 };
 
-export const newSeason = async (userId: number) => {
+export const newSeason = async (userId: string) => {
   // Find the last season by userId, ordered by season number in descending order
   const lastSeason = await prisma.season.findFirst({
     where: { userId },
