@@ -8,8 +8,8 @@ import { seasonNotesRouter } from "./routes/seasonNotes";
 const corsOptions = {
   origin: [
     "http://localhost:5173",
-    "https://api.climbharder.peterforsyth.dev",
-    "https://climbharder.peterforsyth.dev",
+    "https://climb-harder-api.peterforsyth.dev",
+    "https://climb-harder.peterforsyth.dev",
   ],
 };
 
