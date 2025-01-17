@@ -1,7 +1,7 @@
 import { SeasonNotes } from "@prisma/client";
 import { prisma } from "../config/prismaClient";
 
-export const getSeasonNotes = async (userId: number) => {
+export const getSeasonNotes = async (userId: string) => {
   let seasonNotes = await prisma.seasonNotes.findMany({
     where: {
       season: {

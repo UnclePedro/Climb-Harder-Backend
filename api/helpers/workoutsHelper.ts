@@ -3,7 +3,7 @@ import { TrainingType, Workout } from "@prisma/client";
 
 export const validateWorkoutOwnership = async (
   workoutId: number,
-  userId: number
+  userId: string
 ) => {
   const workout = await prisma.workout.findUnique({
     where: { id: workoutId },
@@ -23,7 +23,7 @@ export const validateWorkoutOwnership = async (
   }
 };
 
-export const getWorkouts = async (userId: number) => {
+export const getWorkouts = async (userId: string) => {
   return await prisma.workout.findMany({
     where: {
       season: {
@@ -33,7 +33,7 @@ export const getWorkouts = async (userId: number) => {
   });
 };
 
-export const newWorkout = async (userId: number, seasonId: number) => {
+export const newWorkout = async (userId: string, seasonId: number) => {
   const lastWorkout = await prisma.workout.findFirst({
     where: {
       seasonId,
