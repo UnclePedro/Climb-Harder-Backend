@@ -11,6 +11,7 @@ const corsOptions = {
     "https://climb-harder-api.peterforsyth.dev",
     "https://climb-harder.peterforsyth.dev",
   ],
+  credentials: true,
 };
 
 const app = express();

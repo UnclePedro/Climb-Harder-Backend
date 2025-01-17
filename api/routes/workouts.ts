@@ -14,7 +14,7 @@ export const workoutsRouter = Router();
 workoutsRouter.get("/getWorkouts", async (req: Request, res: Response) => {
   try {
     const apiKey = req.headers["apikey"];
-    const user = await validateUser(apiKey as string);
+    const user = await validateUser(req, res);
 
     const workouts = await getWorkouts(user.id);
 
@@ -31,7 +31,7 @@ workoutsRouter.post("/newWorkout", async (req: Request, res: Response) => {
 
   try {
     const apiKey = req.headers["apikey"];
-    const user = await validateUser(apiKey as string);
+    const user = await validateUser(req, res);
 
     const workout = await newWorkout(user.id, seasonId);
     const updatedWorkouts = await getWorkouts(user.id);
@@ -48,7 +48,7 @@ workoutsRouter.post("/saveWorkout", async (req: Request, res: Response) => {
 
   try {
     const apiKey = req.headers["apikey"];
-    const user = await validateUser(apiKey as string);
+    const user = await validateUser(req, res);
 
     // Only validate ownership if it's an existing workout
     if (workout.id !== -1) {
@@ -74,7 +74,7 @@ workoutsRouter.delete("/deleteWorkout", async (req: Request, res: Response) => {
 
   try {
     const apiKey = req.headers["apikey"];
-    const user = await validateUser(apiKey as string);
+    const user = await validateUser(req, res);
     await validateWorkoutOwnership(workoutId, user.id);
 
     await deleteWorkout(workoutId);
