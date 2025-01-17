@@ -87,16 +87,22 @@ authRouter.get("/logout", async (req: Request, res: Response) => {
 });
 
 authRouter.get("/validateSession", refreshSession, async (req, res) => {
-  const session = workos.userManagement.loadSealedSession({
-    sessionData: req.cookies["wos-session"],
-    cookiePassword: process.env.WORKOS_COOKIE_PASSWORD as string,
-  });
+  try {
+    const session = workos.userManagement.loadSealedSession({
+      sessionData: req.cookies["wos-session"],
+      cookiePassword: process.env.WORKOS_COOKIE_PASSWORD as string,
+    });
 
-  const authResponse = await session.authenticate();
+    const authResponse = await session.authenticate();
 
-  if (!authResponse.authenticated) {
-    console.log("authresponse.authenticated failed");
-    return res.status(401).json({ error: "Unauthorized" });
+    if (!authResponse.authenticated) {
+      console.log("authresponse.authenticated failed");
+      return res.status(401).json({ error: "Unauthorized" });
+    }
+
+    return res.status(200).json(authResponse.user);
+  } catch (error) {
+    console.error("Error validating session:", error);
+    return res.status(500).json({ error: "Internal server error" });
   }
-  return res.status(200).json(authResponse.user);
 });
