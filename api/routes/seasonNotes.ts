@@ -10,7 +10,6 @@ seasonNotesRouter.get(
   "/getSeasonNotes",
   async (req: Request, res: Response) => {
     try {
-      const apiKey = req.headers["apikey"];
       const user = await validateUser(req, res);
 
       const seasonNotes: SeasonNotes[] = await getSeasonNotes(user.id);
@@ -28,7 +27,6 @@ seasonNotesRouter.put(
     const { seasonNotes } = req.body;
 
     try {
-      const apiKey = req.headers["apikey"];
       const user = await validateUser(req, res);
       await validateSeasonOwnership(seasonNotes.seasonId, user.id);
 
