@@ -1,6 +1,6 @@
-// https://climb-harder-api.peterforsyth.dev
+// https://api.climb-harder.peterforsyth.dev
 // http://localhost:8080
-export const backendUrl = "https://climb-harder-api.peterforsyth.de";
+export const backendUrl = "https://api.climb-harder.peterforsyth.dev";
 
 // https://climb-harder.peterforsyth.dev
 // http://localhost:5173
