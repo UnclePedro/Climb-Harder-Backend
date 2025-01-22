@@ -13,6 +13,7 @@ export const seasonsRouter = Router();
 seasonsRouter.get("/getSeasons", async (req: Request, res: Response) => {
   try {
     const user = await validateUser(req, res);
+    if (!user) return;
 
     const seasons: Season[] = await getSeasons(user.id);
 
@@ -26,6 +27,7 @@ seasonsRouter.get("/getSeasons", async (req: Request, res: Response) => {
 seasonsRouter.post("/newSeason", async (req: Request, res: Response) => {
   try {
     const user = await validateUser(req, res);
+    if (!user) return;
 
     await newSeason(user.id);
     const updatedSeasons: Season[] = await getSeasons(user.id);
@@ -41,6 +43,8 @@ seasonsRouter.delete("/deleteSeason", async (req: Request, res: Response) => {
 
   try {
     const user = await validateUser(req, res);
+    if (!user) return;
+
     await validateSeasonOwnership(seasonId, user.id);
 
     await deleteSeason(seasonId);

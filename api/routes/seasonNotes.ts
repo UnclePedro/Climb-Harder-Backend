@@ -11,9 +11,9 @@ seasonNotesRouter.get(
   async (req: Request, res: Response) => {
     try {
       const user = await validateUser(req, res);
+      if (!user) return;
 
       const seasonNotes: SeasonNotes[] = await getSeasonNotes(user.id);
-
       res.status(200).json(seasonNotes);
     } catch (error) {
       res.status(500).json({ error: "Failed to create new season" });
@@ -28,6 +28,8 @@ seasonNotesRouter.put(
 
     try {
       const user = await validateUser(req, res);
+      if (!user) return;
+
       await validateSeasonOwnership(seasonNotes.seasonId, user.id);
 
       const updatedSeasonNotes = await saveSeasonNotes(seasonNotes);

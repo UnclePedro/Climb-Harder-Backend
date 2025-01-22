@@ -103,8 +103,7 @@ export const validateUser = async (req: Request, res: Response) => {
 
   // Redirect to login if no session cookie is provided
   if (authResponse.reason === "no_session_cookie_provided") {
-    res.redirect("/login");
-    throw new Error("No session cookie provided");
+    return res.redirect(`${backendUrl}/login`);
   }
 
   // Attempt to refresh the session if session cookies exist
@@ -127,7 +126,6 @@ export const validateUser = async (req: Request, res: Response) => {
     return authResponse.session.user;
   } catch (error) {
     res.clearCookie("wos-session");
-    res.redirect("/login");
-    throw new Error("Unauthorized user");
+    return res.redirect(`${backendUrl}/login`);
   }
 };
