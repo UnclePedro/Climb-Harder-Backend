@@ -1,7 +1,7 @@
 import { prisma } from "../config/prismaClient";
 import { WorkOS } from "@workos-inc/node";
 import { Request, Response } from "express";
-import { cookiesDomian } from "../config/endpointConfig";
+import { backendUrl, cookiesDomian } from "../config/endpointConfig";
 
 const workos = new WorkOS(process.env.WORKOS_API_KEY, {
   clientId: process.env.WORKOS_CLIENT_ID,
@@ -57,7 +57,7 @@ export const refreshSession = async (
     authResponse.reason === "no_session_cookie_provided"
   ) {
     console.log("Redirect #1 attempted");
-    return res.redirect("/login");
+    return res.redirect(`${backendUrl}/login`);
   }
 
   // If the session is invalid, attempt to refresh
@@ -66,7 +66,7 @@ export const refreshSession = async (
 
     if (!authResponse.authenticated) {
       console.log("Redirect #2 attempted");
-      return res.redirect("/login");
+      return res.redirect(`${backendUrl}/login`);
     }
 
     // update the cookie
@@ -84,7 +84,7 @@ export const refreshSession = async (
     // Failed to refresh access token, redirect user to login page after deleting the cookie
     console.log("Redirect #3 attempted");
     res.clearCookie("wos-session");
-    res.redirect("/login");
+    return res.redirect(`${backendUrl}/login`);
   }
 };
 
