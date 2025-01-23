@@ -98,5 +98,6 @@ export const getUser = async (req: Request) => {
   if (authResponse.authenticated) {
     return authResponse.user;
   }
+
   throw new Error("Unauthenticated user");
 };
