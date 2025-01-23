@@ -57,8 +57,7 @@ export const refreshSession = async (
     authResponse.reason === "no_session_cookie_provided"
   ) {
     console.log("Redirect #1 attempted");
-    res.redirect(`${backendUrl}/login`); // redirect directly since this request should be coming from browser as an initial sign-in?
-    // return res.status(401).json({ redirectUrl: `${backendUrl}/login` });
+    return res.status(401).json({ redirectUrl: `${backendUrl}/login` });
   }
 
   // If the session is invalid, attempt to refresh

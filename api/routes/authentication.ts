@@ -90,7 +90,7 @@ authRouter.get("/logout", async (req: Request, res: Response) => {
   res.redirect(url);
 });
 
-authRouter.get("/getUser", refreshSession, async (req, res) => {
+authRouter.get("/getUser", async (req, res) => {
   try {
     const user = await getUser(req);
     return res.status(200).json(user);
