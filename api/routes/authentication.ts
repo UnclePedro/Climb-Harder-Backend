@@ -1,7 +1,11 @@
 import { WorkOS } from "@workos-inc/node";
 import { Router, Request, Response } from "express";
 import cookieParser from "cookie-parser";
-import { refreshSession, saveUser } from "../helpers/authenticationHelper";
+import {
+  getUser,
+  refreshSession,
+  saveUser,
+} from "../helpers/authenticationHelper";
 import {
   frontendUrl,
   backendUrl,
@@ -80,29 +84,18 @@ authRouter.get("/logout", async (req: Request, res: Response) => {
   const url = await session.getLogoutUrl();
 
   res.clearCookie("wos-session", {
-    domain: ".climb-harder.peterforsyth.dev",
+    // domain: ".climb-harder.peterforsyth.dev",
     path: "/",
   });
   res.redirect(url);
 });
 
-authRouter.get("/validateSession", refreshSession, async (req, res) => {
+authRouter.get("/getUser", refreshSession, async (req, res) => {
   try {
-    const session = workos.userManagement.loadSealedSession({
-      sessionData: req.cookies["wos-session"],
-      cookiePassword: process.env.WORKOS_COOKIE_PASSWORD as string,
-    });
-
-    const authResponse = await session.authenticate();
-
-    if (!authResponse.authenticated) {
-      console.log("authresponse.authenticated failed");
-      return res.status(401).json({ error: "Unauthorized" });
-    }
-
-    return res.status(200).json(authResponse.user);
+    const user = await getUser(req);
+    return res.status(200).json(user);
   } catch (error) {
-    console.error("Error validating session:", error);
+    console.error("Error getting user:", error);
     return res.status(500).json({ error: "Internal server error" });
   }
 });

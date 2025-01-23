@@ -1,6 +1,6 @@
 import { Request, Response, Router } from "express";
 import { Workout } from "@prisma/client";
-import { validateUser } from "../helpers/authenticationHelper";
+import { refreshSession, getUser } from "../helpers/authenticationHelper";
 import {
   deleteWorkout,
   saveWorkout,
@@ -10,12 +10,11 @@ import {
 } from "../helpers/workoutsHelper";
 
 export const workoutsRouter = Router();
+workoutsRouter.use(refreshSession);
 
 workoutsRouter.get("/getWorkouts", async (req: Request, res: Response) => {
   try {
-    const user = await validateUser(req, res);
-    if (!user) return;
-
+    const user = await getUser(req);
     const workouts = await getWorkouts(user.id);
 
     res.status(200).json(workouts);
@@ -30,9 +29,7 @@ workoutsRouter.post("/newWorkout", async (req: Request, res: Response) => {
   const { seasonId } = req.body;
 
   try {
-    const user = await validateUser(req, res);
-    if (!user) return;
-
+    const user = await getUser(req);
     const workout = await newWorkout(user.id, seasonId);
     const updatedWorkouts = await getWorkouts(user.id);
 
@@ -47,8 +44,7 @@ workoutsRouter.post("/saveWorkout", async (req: Request, res: Response) => {
   const { workout } = req.body;
 
   try {
-    const user = await validateUser(req, res);
-    if (!user) return;
+    const user = await getUser(req);
 
     // Only validate ownership if it's an existing workout
     if (workout.id !== -1) {
@@ -73,10 +69,8 @@ workoutsRouter.delete("/deleteWorkout", async (req: Request, res: Response) => {
   const { workoutId } = req.body;
 
   try {
-    const user = await validateUser(req, res);
-    if (!user) return;
+    const user = await getUser(req);
     await validateWorkoutOwnership(workoutId, user.id);
-
     await deleteWorkout(workoutId);
 
     const updatedWorkouts: Workout[] = await getWorkouts(user.id);
