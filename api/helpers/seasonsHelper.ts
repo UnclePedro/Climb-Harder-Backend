@@ -28,7 +28,7 @@ export const getSeasons = async (userId: string) => {
 };
 
 export const newSeason = async (userId: string) => {
-  // Find the last season by userId, ordered by season number in descending order
+  // Find the last season by userId, ordered by season number in descending order. Used to calculate new season number
   const lastSeason = await prisma.season.findFirst({
     where: { userId },
     orderBy: { number: "desc" },

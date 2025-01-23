@@ -1,6 +1,6 @@
 import { Request, Response, Router } from "express";
 import { Season, User } from "@prisma/client";
-import { getUser } from "../helpers/authenticationHelper";
+import { getUser, refreshSession } from "../helpers/authenticationHelper";
 import {
   deleteSeason,
   getSeasons,
@@ -9,6 +9,7 @@ import {
 } from "../helpers/seasonsHelper";
 
 export const seasonsRouter = Router();
+seasonsRouter.use(refreshSession);
 
 seasonsRouter.get("/getSeasons", async (req: Request, res: Response) => {
   try {

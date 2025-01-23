@@ -56,7 +56,6 @@ export const refreshSession = async (
     !authResponse.authenticated &&
     authResponse.reason === "no_session_cookie_provided"
   ) {
-    console.log("Redirect #1 attempted");
     return res.status(401).json({ redirectUrl: `${backendUrl}/login` });
   }
 
@@ -65,7 +64,6 @@ export const refreshSession = async (
     const authResponse = await session.refresh();
 
     if (!authResponse.authenticated) {
-      console.log("Redirect #2 attempted");
       return res.status(401).json({ redirectUrl: `${backendUrl}/login` });
     }
 
@@ -82,7 +80,6 @@ export const refreshSession = async (
     return next();
   } catch (error) {
     // Failed to refresh access token, redirect user to login page after deleting the cookie
-    console.log("Redirect #3 attempted");
     res.clearCookie("wos-session");
     return res.status(401).json({ redirectUrl: `${backendUrl}/login` });
   }

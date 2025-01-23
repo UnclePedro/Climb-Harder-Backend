@@ -1,5 +1,5 @@
 import { prisma } from "../config/prismaClient";
-import { TrainingType, Workout } from "@prisma/client";
+import { Workout } from "@prisma/client";
 
 export const validateWorkoutOwnership = async (
   workoutId: number,
@@ -33,39 +33,14 @@ export const getWorkouts = async (userId: string) => {
   });
 };
 
-export const newWorkout = async (userId: string, seasonId: number) => {
-  const lastWorkout = await prisma.workout.findFirst({
-    where: {
-      seasonId,
-      season: {
-        userId,
-      },
-    },
-    orderBy: { date: "desc" },
-  });
-
-  const newWorkout = await prisma.workout.create({
-    data: {
-      name: lastWorkout?.name || "Workout Name",
-      trainingType: lastWorkout?.trainingType || TrainingType.Base,
-      details: "",
-      duration: 0,
-      date: new Date(),
-      seasonId,
-    },
-  });
-
-  return newWorkout;
-};
-
 export const saveWorkout = async (workout: Workout) => {
-  // If the workout ID is -1, it's a new workout, so omit the placeholder ID during creation
+  // If the workout ID is -1, it's a new workout, so create it in database
   if (workout.id === -1) {
     return await prisma.workout.create({
-      data: { ...workout, id: undefined }, // Ensure id is not included
+      data: { ...workout, id: undefined }, // Ensure id is not included so a new one is created against the workout
     });
   } else {
-    // For existing workouts, use upsert
+    // For existing workouts, update it
     return await prisma.workout.update({
       where: { id: workout.id },
       data: { ...workout },

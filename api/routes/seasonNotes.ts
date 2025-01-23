@@ -1,10 +1,11 @@
 import { Request, Response, Router } from "express";
-import { getUser } from "../helpers/authenticationHelper";
+import { getUser, refreshSession } from "../helpers/authenticationHelper";
 import { saveSeasonNotes, getSeasonNotes } from "../helpers/seasonNotesHelper";
 import { SeasonNotes, User } from "@prisma/client";
 import { validateSeasonOwnership } from "../helpers/seasonsHelper";
 
 export const seasonNotesRouter = Router();
+seasonNotesRouter.use(refreshSession);
 
 seasonNotesRouter.get(
   "/getSeasonNotes",

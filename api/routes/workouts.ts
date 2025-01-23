@@ -6,7 +6,6 @@ import {
   saveWorkout,
   getWorkouts,
   validateWorkoutOwnership,
-  newWorkout,
 } from "../helpers/workoutsHelper";
 
 export const workoutsRouter = Router();
@@ -22,21 +21,6 @@ workoutsRouter.get("/getWorkouts", async (req: Request, res: Response) => {
     res.status(500).json({
       error: "Failed to get workouts",
     });
-  }
-});
-
-workoutsRouter.post("/newWorkout", async (req: Request, res: Response) => {
-  const { seasonId } = req.body;
-
-  try {
-    const user = await getUser(req);
-    const workout = await newWorkout(user.id, seasonId);
-    const updatedWorkouts = await getWorkouts(user.id);
-
-    res.status(201).json({ workout, updatedWorkouts });
-  } catch (error) {
-    console.error("Failed to create new workout:", error);
-    res.status(500).json({ error: "Failed to create new workout" });
   }
 });
 
