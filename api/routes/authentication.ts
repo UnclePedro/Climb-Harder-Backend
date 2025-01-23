@@ -84,7 +84,7 @@ authRouter.get("/logout", async (req: Request, res: Response) => {
   const url = await session.getLogoutUrl();
 
   res.clearCookie("wos-session", {
-    // domain: ".climb-harder.peterforsyth.dev",
+    domain: ".climb-harder.peterforsyth.dev",
     path: "/",
   });
   res.redirect(url);
