@@ -1,5 +1,5 @@
 import { Request, Response, Router } from "express";
-import { validateUser } from "../helpers/authenticationHelper";
+import { getUser } from "../helpers/authenticationHelper";
 import { saveSeasonNotes, getSeasonNotes } from "../helpers/seasonNotesHelper";
 import { SeasonNotes, User } from "@prisma/client";
 import { validateSeasonOwnership } from "../helpers/seasonsHelper";
@@ -10,8 +10,7 @@ seasonNotesRouter.get(
   "/getSeasonNotes",
   async (req: Request, res: Response) => {
     try {
-      const user = await validateUser(req, res);
-      if (!user) return;
+      const user = await getUser(req);
 
       const seasonNotes: SeasonNotes[] = await getSeasonNotes(user.id);
       res.status(200).json(seasonNotes);
@@ -27,11 +26,8 @@ seasonNotesRouter.put(
     const { seasonNotes } = req.body;
 
     try {
-      const user = await validateUser(req, res);
-      if (!user) return;
-
+      const user = await getUser(req);
       await validateSeasonOwnership(seasonNotes.seasonId, user.id);
-
       const updatedSeasonNotes = await saveSeasonNotes(seasonNotes);
 
       res.status(200).json({

@@ -57,7 +57,7 @@ export const refreshSession = async (
     authResponse.reason === "no_session_cookie_provided"
   ) {
     console.log("Redirect #1 attempted");
-    return res.redirect(`${backendUrl}/login`);
+    return res.status(401).json({ redirectUrl: `${backendUrl}/login` });
   }
 
   // If the session is invalid, attempt to refresh
@@ -66,7 +66,7 @@ export const refreshSession = async (
 
     if (!authResponse.authenticated) {
       console.log("Redirect #2 attempted");
-      return res.redirect(`${backendUrl}/login`);
+      return res.status(401).json({ redirectUrl: `${backendUrl}/login` });
     }
 
     // update the cookie
@@ -79,53 +79,24 @@ export const refreshSession = async (
     });
 
     // Redirect to the same route to ensure the updated cookie is used
-    return res.redirect(req.originalUrl);
-  } catch (e) {
+    return next();
+  } catch (error) {
     // Failed to refresh access token, redirect user to login page after deleting the cookie
     console.log("Redirect #3 attempted");
     res.clearCookie("wos-session");
-    return res.redirect(`${backendUrl}/login`);
+    return res.status(401).json({ redirectUrl: `${backendUrl}/login` });
   }
 };
 
-export const validateUser = async (req: Request, res: Response) => {
+export const getUser = async (req: Request) => {
   const session = workos.userManagement.loadSealedSession({
     sessionData: req.cookies["wos-session"],
     cookiePassword: process.env.WORKOS_COOKIE_PASSWORD as string,
   });
 
-  // Try authenticating the session
   const authResponse = await session.authenticate();
-
   if (authResponse.authenticated) {
     return authResponse.user;
   }
-
-  // Redirect to login if no session cookie is provided
-  if (authResponse.reason === "no_session_cookie_provided") {
-    return res.redirect(`${backendUrl}/login`);
-  }
-
-  // Attempt to refresh the session if session cookies exist
-  try {
-    const authResponse = await session.refresh();
-
-    if (!authResponse.authenticated || !authResponse.session) {
-      throw new Error("Session refresh failed");
-    }
-
-    // Update the cookie with the refreshed session
-    res.cookie("wos-session", authResponse.sealedSession, {
-      domain: cookiesDomian,
-      path: "/",
-      httpOnly: false,
-      secure: true,
-      sameSite: "none",
-    });
-
-    return authResponse.session.user;
-  } catch (error) {
-    res.clearCookie("wos-session");
-    return res.redirect(`${backendUrl}/login`);
-  }
+  throw new Error("Unauthenticated user");
 };
