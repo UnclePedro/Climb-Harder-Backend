@@ -74,6 +74,7 @@ export const refreshSession = async (
       httpOnly: false,
       secure: true,
       sameSite: "none",
+      expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7 days
     });
 
     // Redirect to the same route to ensure the updated cookie is used
