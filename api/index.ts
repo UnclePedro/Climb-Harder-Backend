@@ -4,6 +4,7 @@ import { workoutsRouter } from "./routes/workouts";
 import { authRouter } from "./routes/authentication";
 import { seasonsRouter } from "./routes/seasons";
 import { seasonNotesRouter } from "./routes/seasonNotes";
+import { exportDataRouter } from "./routes/exportData";
 
 const corsOptions = {
   origin: [
@@ -23,6 +24,7 @@ app.use("/", authRouter);
 app.use("/", seasonsRouter);
 app.use("/", seasonNotesRouter);
 app.use("/", workoutsRouter);
+app.use("/", exportDataRouter);
 
 app.listen(8080, () => {
   console.log("Server is running.");
