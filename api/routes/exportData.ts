@@ -53,7 +53,7 @@ exportDataRouter.get("/export-data", async (req, res) => {
             workout.trainingType,
             workout.name,
             workout.details,
-            workout.duration.toString(),
+            workout.duration,
             workout.date.toISOString(),
           ].join(",")
         );
@@ -62,7 +62,10 @@ exportDataRouter.get("/export-data", async (req, res) => {
 
     const csvContent = [headers, ...rows].join("\n");
 
-    res.setHeader("Content-Disposition", "attachment; filename=rabbit.csv");
+    res.setHeader(
+      "Content-Disposition",
+      "attachment; filename=climb-harder-data.csv"
+    );
     res.setHeader("Content-Type", "text/csv");
     res.send(csvContent);
   } catch (error) {
